@@ -26,14 +26,13 @@ public class UserAggregate {
     private Set<String> roles;
     @CommandHandler
     public UserAggregate(CreateUserCommand createUserCommand){
-        log.info("inside command handler:"+createUserCommand.toString());
+        log.info("inside command handler:");
         UserCreatedEvent userCreatedEvent= UserCreatedEvent.builder()
                 .username(createUserCommand.getUsername())
                 .email(createUserCommand.getEmail())
                 .password(createUserCommand.getPassword())
                 .roles(createUserCommand.getRoles()).build();
         userCreatedEvent.setId(createUserCommand.getUserId());
-        log.info("command handler"+createUserCommand.getUserId().toString()+userCreatedEvent.getId().toString());
         AggregateLifecycle.apply(userCreatedEvent);
 
     }
@@ -48,6 +47,7 @@ public class UserAggregate {
     public void on(UserDeletedEvent userDeletedEvent){
         this.Id =userDeletedEvent.getId();
         this.username=userDeletedEvent.getUsername();
+        log.info("evenrt sourcing");
     }
     public UserAggregate(){
 

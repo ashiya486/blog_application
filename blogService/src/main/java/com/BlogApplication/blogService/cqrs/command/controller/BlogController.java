@@ -4,9 +4,6 @@ import com.BlogApplication.blogService.core.exceptions.RestTemplateException;
 import com.BlogApplication.blogService.cqrs.command.commands.CreateBlogCommand;
 import com.BlogApplication.blogService.cqrs.command.commands.DeleteBlogCommand;
 import com.BlogApplication.blogService.cqrs.command.payload.BlogRequest;
-import com.BlogApplication.blogService.cqrs.command.repository.CategoryRepository;
-import com.BlogApplication.blogService.core.entity.Category;
-import io.jsonwebtoken.Header;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,28 +15,24 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 @RestController
 @Slf4j
-@RequestMapping("/blog/command")
+@RequestMapping("/blogs")
 public class BlogController {
     private CommandGateway commandGateway;
-    @Autowired
-    private CategoryRepository categoryRepository;
     @Autowired
     private RestTemplate restTemplate;
 
     public BlogController(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
     }
-    @GetMapping
-    public String test(){
-        return "test";
-    }
+    String validate_url="http://USER-SERVICE/user/command/validate";
+
 
     @PostMapping
     public ResponseEntity<?> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwt,@RequestBody BlogRequest blogRequest) {
         HttpHeaders header = new HttpHeaders();
         header.set("AUTHORIZATION", jwt);
         HttpEntity<String> entity = new HttpEntity<>(jwt);
-        ResponseEntity<Void> response = restTemplate.exchange("http://localhost:8081/user/command/validate", HttpMethod.GET, entity, Void.class);
+        ResponseEntity<Void> response = restTemplate.exchange(validate_url, HttpMethod.GET, entity, Void.class);
         if (response.getStatusCode() == HttpStatus.ACCEPTED) {
             CreateBlogCommand createBlogCommand = new CreateBlogCommand(UUID.randomUUID(), blogRequest.getAuthor(), blogRequest.getTopic(), blogRequest.getContent(), LocalDateTime.now(), blogRequest.getCategory());
             return ResponseEntity.ok(this.commandGateway.sendAndWait(createBlogCommand));
@@ -49,11 +42,11 @@ public class BlogController {
         }
     }
     @DeleteMapping("/delete/{blogName}")
-    public ResponseEntity<?> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwt,@PathVariable("blogName") String blogName) {
+    public ResponseEntity<?> deletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwt,@PathVariable("blogName") String blogName) {
         HttpHeaders header = new HttpHeaders();
         header.set("AUTHORIZATION", jwt);
         HttpEntity<String> entity = new HttpEntity<>(jwt);
-        ResponseEntity<Void> response = restTemplate.exchange("http://localhost:8081/user/command/validate", HttpMethod.GET, entity, Void.class);
+        ResponseEntity<Void> response = restTemplate.exchange(validate_url, HttpMethod.GET, entity, Void.class);
         if (response.getStatusCode() == HttpStatus.ACCEPTED) {
             DeleteBlogCommand deleteBlogCommand=new DeleteBlogCommand(blogName);
             return ResponseEntity.ok(this.commandGateway.sendAndWait(deleteBlogCommand));
@@ -63,17 +56,5 @@ public class BlogController {
         }
     }
 
-    @PostMapping("/restore")
-    public ResponseEntity<?>restore() {
-        Category category = new Category(1, "sci-fi");
-        Category category2 = new Category(2, "science");
-        categoryRepository.save(category);
-        categoryRepository.save(category2);
-return ResponseEntity.ok("successful");
-    }
-    @DeleteMapping("delete/{title}")
-    public void deleteBlog(@PathVariable("title")String title){
-
-    }
 
 }

@@ -33,7 +33,7 @@ public class UserEventsHandler {
     KafkaTemplate<String,Object> kafkaTemplate;
     @EventHandler
     public void on(UserCreatedEvent userCreatedEvent){
-        log.info("event handler create"+userCreatedEvent.getId().toString());
+        log.info("event handler create");
         User user=new User();
         Set<String> strRoles=userCreatedEvent.getRoles();
         Set<Role> roles=new HashSet<>();
@@ -60,8 +60,8 @@ public class UserEventsHandler {
         }
 
         userRepository.save(user);
-        log.info("persisting user"+user.getUserId().toString());
-        log.info("publishing event"+userCreatedEvent.toString());
+        log.info("persisting user");
+        log.info("publishing event");
         this.kafkaTemplate.send("UserEventsTopic",userCreatedEvent);
     }
     @EventHandler

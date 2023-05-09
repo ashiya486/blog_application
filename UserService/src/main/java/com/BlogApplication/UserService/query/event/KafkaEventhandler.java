@@ -4,6 +4,7 @@ import com.BlogApplication.UserService.core.entity.ERole;
 import com.BlogApplication.UserService.core.entity.Role;
 import com.BlogApplication.UserService.core.entity.User;
 import com.BlogApplication.UserService.core.events.UserCreatedEvent;
+import com.BlogApplication.UserService.core.events.UserDeletedEvent;
 import com.BlogApplication.UserService.query.repository.EventRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -28,7 +29,12 @@ public class KafkaEventhandler {
 
 @KafkaHandler
     public void listen(@Payload UserCreatedEvent userCreatedEvent){
-        log.info("inside event hanlder");
-//        repo.save(userCreatedEvent);
+        log.info("inside event handlder");
+        repo.save(userCreatedEvent);
+    }
+    @KafkaHandler
+    public void listen(@Payload UserDeletedEvent userDeletedEvent){
+        log.info("inside event hanldder");
+        repo.save(userDeletedEvent);
     }
 }

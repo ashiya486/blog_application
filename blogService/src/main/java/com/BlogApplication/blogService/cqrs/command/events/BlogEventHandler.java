@@ -24,7 +24,7 @@ public class BlogEventHandler {
 
     @EventHandler
     public void on(BlogCreatedEvent blogCreatedEvent){
-        log.info("inside event handler:create blog"+blogCreatedEvent.getId().toString());
+        log.info("inside event handler:create blog");
 
         Category cat=categoryRepository.findCategoryByName(blogCreatedEvent.getCategory());
         Blog blog= Blog.builder()
@@ -33,7 +33,7 @@ public class BlogEventHandler {
                 .topic(blogCreatedEvent.getTopic())
                 .content(blogCreatedEvent.getContent())
                 .category(cat).build();
-//        blogrepository.save(blog);
+        blogrepository.save(blog);
         log.info("publishing event to kafka");
        this.kafkaTemplate.send("BlogEventsTopic",blogCreatedEvent);
     }
@@ -41,8 +41,8 @@ public class BlogEventHandler {
     public void on(BlogDeletedEvent blogDeletedEvent){
         log.info("delete event handler"+blogDeletedEvent.toString());
         try{
-            if(blogrepository.existBlogByTopic(blogDeletedEvent.getTopic())){
-//                blogrepository.deleteByTopic(blogDeletedEvent.getTopic());
+            if(blogrepository.existsBlogByTopic(blogDeletedEvent.getTopic())){
+                blogrepository.deleteByTopic(blogDeletedEvent.getTopic());
                 this.kafkaTemplate.send("BlogEventsTopic",blogDeletedEvent);
             }
             log.info("blog deleted");

@@ -1,5 +1,6 @@
 package com.BlogApplication.blogService.cqrs.query.controller;
 
+import com.BlogApplication.blogService.core.entity.Blog;
 import com.BlogApplication.blogService.cqrs.command.repository.Blogrepository;
 import com.BlogApplication.blogService.cqrs.query.payload.BlogModel;
 import com.BlogApplication.blogService.cqrs.query.query.GetAllBlogsQuery;
@@ -16,11 +17,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/blog/query")
+@RequestMapping("/blogs")
 public class BlogQueryController {
     private QueryGateway queryGateway;
     @Autowired
@@ -38,10 +40,9 @@ public class BlogQueryController {
         List<BlogModel> listBLog=queryGateway.query(getAllBlogsQuery, ResponseTypes.multipleInstancesOf(BlogModel.class)).join();
         return ResponseEntity.ok(listBLog);
             }
-     @GetMapping("/category/{category}")
+     @GetMapping("/info/{category}")
     public ResponseEntity<?>getBlogByCategory(@PathVariable("category") String category){
-         log.info("inside controller:get all by category " +
-                 "blogs");
+         log.info("inside controller:get all by category ");
          GetBlogsByCategory getBlogsByCategory=new GetBlogsByCategory(category);
          log.info("loading query to query gateway");
          List<BlogModel> blogs=queryGateway.query(getBlogsByCategory, ResponseTypes.multipleInstancesOf(BlogModel.class)).join();
@@ -55,13 +56,22 @@ public class BlogQueryController {
         List<BlogModel> blogs = queryGateway.query(getBlogsByUsername, ResponseTypes.multipleInstancesOf(BlogModel.class)).join();
          return ResponseEntity.ok(blogs);
      }
-     @GetMapping("/date/{startDate}/{enddate}")
-    public ResponseEntity<?> getBlogBetweenDate(@PathVariable("startDate")String startDate,@PathVariable("enddate") String endDate){
+     @GetMapping("/date/{durationFromRange}/{durationFromRange}")
+    public ResponseEntity<?> getBlogBetweenDate(@PathVariable("durationFromRange")String startDate,@PathVariable("durationFromRange") String endDate){
          log.info("inside controller:get all between dates  blogs");
          GetBlogsBetweenDates getBlogsBetweenDates= new GetBlogsBetweenDates(startDate,endDate);
          log.info("loading query to query gateway");
          List<BlogModel> blogs = queryGateway.query(getBlogsBetweenDates, ResponseTypes.multipleInstancesOf(BlogModel.class)).join();
          return ResponseEntity.ok(blogs);
+     }
+     @GetMapping("get/{category}/{durationFromRange}/{durationToRange}")
+    public ResponseEntity<?> getBlogsByCategoryAndDate(@PathVariable("category") String category,@PathVariable("durationFromRange")String startDate,@PathVariable("durationToRange") String endDate){
+    List<Blog> blogs_cat=(List)getBlogByCategory(category).getBody();
+    List<Blog> blogs_date=(List)getBlogBetweenDate(startDate,endDate);
+    List<Blog> intersect= new ArrayList<>(blogs_cat);
+    intersect.retainAll(blogs_date);
+    return ResponseEntity.ok(intersect);
+
      }
 
 }

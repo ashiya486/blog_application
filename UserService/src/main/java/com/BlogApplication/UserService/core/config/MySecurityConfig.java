@@ -31,7 +31,7 @@ public class MySecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/user/command/register","/user/query/authenticate","/user/command/test").permitAll()
+                .antMatchers("/user/register","/user/authenticate","/user/test","/actuator/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

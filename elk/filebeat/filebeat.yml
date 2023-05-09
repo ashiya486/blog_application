@@ -1,0 +1,6 @@
+filebeat.inputs:
+  - type: log
+    paths:
+      - D:/redo/BlogApplication/UserService/src/main/resources/User.log
+output.logstash:
+  hosts: ["localhost:5044"]

@@ -11,6 +11,6 @@ public interface Blogrepository extends JpaRepository<Blog, UUID> {
     List<Blog> findByCategoryId(Long id);
     List<Blog> findAllByAuthor(String name);
     List<Blog> findAllByTimestampBetween(LocalDateTime start ,LocalDateTime end);
-    boolean existBlogByTopic(String topic);
+    boolean existsBlogByTopic(String topic);
     void deleteByTopic(String topic);
 }

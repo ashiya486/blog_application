@@ -19,13 +19,13 @@ public class KafkaEventsHandler {
     private EventRepository repo;
     @KafkaHandler
 public void listen(@Payload BlogCreatedEvent blogCreatedEvent){
-    log.info("kafka handler"+blogCreatedEvent.getId().toString());
-//    repo.save(blogCreatedEvent);
+    log.info("kafka handler");
+    repo.save(blogCreatedEvent);
 }
         @KafkaHandler
     public void listen(@Payload BlogDeletedEvent blogDeletedEvent){
-        log.info("kafka handler"+blogDeletedEvent.getId().toString());
-//    repo.save(blogCreatedEvent);
+        log.info("kafka handler");
+    repo.save(blogDeletedEvent);
     }
 
 }

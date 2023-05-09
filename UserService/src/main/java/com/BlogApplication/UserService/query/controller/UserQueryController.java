@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +27,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/user/query")
+@RequestMapping("/user")
 public class UserQueryController {
     public UserQueryController(QueryGateway queryGateway) {
         this.queryGateway = queryGateway;
@@ -47,7 +46,7 @@ public class UserQueryController {
     @GetMapping
     public ResponseEntity<?> getUsers() {
         GetUsersQuery getUserQuery = new GetUsersQuery();
-        log.info("load get user by username query ");
+        log.info("controller");
        List<UserModel> list=queryGateway.query(getUserQuery, ResponseTypes.multipleInstancesOf(UserModel.class)).join();
        return ResponseEntity.ok(list);
     }
@@ -57,18 +56,22 @@ public class UserQueryController {
             Authentication authentication=authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword()));
         }
         catch(Exception e){throw new BadRequestException("invalid credentials");}
+        log.info("generating token");
         final UserDetails userDetails=userDetailsService.loadUserByUsername(loginRequest.getUsername());
         final String jwt=jwtUtill.generateToken(userDetails);
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
     @GetMapping("/validate")
     public ResponseEntity<?> validateUser(){
+        log.info("user validated");
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+
     }
     @GetMapping("/blogs")
     public ResponseEntity<?>getBlogsByUser(){
     com.BlogApplication.UserService.core.entity.UserDetails userDetails=(com.BlogApplication.UserService.core.entity.UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    ResponseEntity<?> response=restTemplate.exchange("http://localhost:8081/user/query/user/"+userDetails.getUsername(), HttpMethod.GET,null,List.class);
+    ResponseEntity<?> response=restTemplate.exchange("http://BLOG_SERVICE/blogs/user/"+userDetails.getUsername(), HttpMethod.GET,null,List.class);
+        log.info("response recieved");
     if(response.getStatusCode()==HttpStatus.OK){
         return response;
     }else{throw new RestTemplateException(response.getStatusCode(),response.toString());
