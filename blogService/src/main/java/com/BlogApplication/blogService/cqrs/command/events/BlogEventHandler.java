@@ -31,8 +31,10 @@ public class BlogEventHandler {
                 .id(blogCreatedEvent.getId())
                 .author(blogCreatedEvent.getAuthor())
                 .topic(blogCreatedEvent.getTopic())
+                .timestamp(blogCreatedEvent.getTimestamp())
                 .content(blogCreatedEvent.getContent())
                 .category(cat).build();
+        log.info("saving blog"+blog.getId().toString(),blog.getTimestamp().toString());
         blogrepository.save(blog);
         log.info("publishing event to kafka");
        this.kafkaTemplate.send("BlogEventsTopic",blogCreatedEvent);

@@ -33,7 +33,7 @@ public class UserEventsHandler {
     KafkaTemplate<String,Object> kafkaTemplate;
     @EventHandler
     public void on(UserCreatedEvent userCreatedEvent){
-        log.info("event handler create");
+        log.info("event handler create"+userCreatedEvent.getId().toString()+userCreatedEvent.getRoles().toString());
         User user=new User();
         Set<String> strRoles=userCreatedEvent.getRoles();
         Set<Role> roles=new HashSet<>();
@@ -41,8 +41,10 @@ public class UserEventsHandler {
         user.setUsername(userCreatedEvent.getUsername());
         user.setEmail(userCreatedEvent.getEmail());
         user.setPassword(passwordEncoder.encode(userCreatedEvent.getPassword()));
+
         if(strRoles==null){
             Role userRole=roleRepository.findByName(ERole.ROLE_USER);
+            log.info("check roles user"+userRole.getName().toString());
             roles.add(userRole);
 
         }else{
@@ -50,17 +52,20 @@ public class UserEventsHandler {
                 switch (role){
                     case "admin":
                         Role adminRole=roleRepository.findByName(ERole.ROLE_ADMIN);
+                        log.info("role"+adminRole.getName().toString());
                         roles.add(adminRole);
                         break;
                     default:
                         Role userRole=roleRepository.findByName(ERole.ROLE_USER);
+                        log.info("role"+userRole.getName().toString());
                         roles.add(userRole);
                 }
             });
         }
-
+        log.info("persisting user"+user.getUserId().toString());
+        user.setRoles(roles);
         userRepository.save(user);
-        log.info("persisting user");
+
         log.info("publishing event");
         this.kafkaTemplate.send("UserEventsTopic",userCreatedEvent);
     }

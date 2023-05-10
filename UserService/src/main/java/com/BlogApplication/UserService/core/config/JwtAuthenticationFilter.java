@@ -20,8 +20,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl UserDetailService;
     @Autowired
-    private JwtUtill jwtUtil;
 
+    private JwtUtill jwtUtil;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {

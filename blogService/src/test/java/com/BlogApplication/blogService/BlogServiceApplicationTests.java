@@ -27,8 +27,6 @@ class BlogServiceApplicationTests {
 
 	@Mock
 	private Blogrepository blogrepository;
-//	@Mock
-//	private
 	@BeforeEach
 	public void setup(){
 		MockitoAnnotations.openMocks(this);

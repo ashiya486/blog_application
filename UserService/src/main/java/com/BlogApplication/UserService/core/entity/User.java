@@ -16,6 +16,7 @@ import java.util.UUID;
 @Entity
 public class User {
     @Id
+    @Type(type ="uuid-char")
     private UUID userId;
     private String username;
     private String email;

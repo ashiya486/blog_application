@@ -5,9 +5,12 @@ import com.BlogApplication.UserService.command.payload.RegisterRequest;
 import com.BlogApplication.UserService.command.repository.RoleRepository;
 import com.BlogApplication.UserService.command.repository.UserRepository;
 import com.BlogApplication.UserService.core.config.JwtUtill;
+import com.BlogApplication.UserService.core.entity.ERole;
+import com.BlogApplication.UserService.core.entity.Role;
 import com.BlogApplication.UserService.core.entity.UserDetails;
 import com.BlogApplication.UserService.core.exceptions.BadRequestException;
 import com.BlogApplication.UserService.core.service.UserDetailsServiceImpl;
+import com.netflix.discovery.converters.Auto;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
 @RestController
@@ -27,13 +30,15 @@ import java.util.UUID;
 @RequestMapping("/user")
 public class UserController {
     private CommandGateway commandGateway;
+    @Autowired
+    private RoleRepository repo;
 
     public UserController(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> createUser(@RequestBody RegisterRequest registerRequest){
+    public ResponseEntity<?> createUser(@Valid @RequestBody RegisterRequest registerRequest){
         log.info("controller:create user");
         CreateUserCommand createUserCommand= CreateUserCommand.builder()
                 .userId(UUID.randomUUID())
@@ -60,6 +65,14 @@ public class UserController {
             throw new BadRequestException("unable to delete user either user does not exist or you do not have authority to delete the user");
         }
     }
+    @PostMapping("/restore")
+    public void restore(){
+        Role role1=new Role(1, ERole.ROLE_USER);
+        Role role2=new Role(2,ERole.ROLE_ADMIN);
+        repo.save(role1);
+        repo.save(role2);
+
+            }
 
 
 }

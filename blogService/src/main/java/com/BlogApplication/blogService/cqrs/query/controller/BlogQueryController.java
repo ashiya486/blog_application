@@ -2,6 +2,7 @@ package com.BlogApplication.blogService.cqrs.query.controller;
 
 import com.BlogApplication.blogService.core.entity.Blog;
 import com.BlogApplication.blogService.cqrs.command.repository.Blogrepository;
+import com.BlogApplication.blogService.cqrs.command.repository.CategoryRepository;
 import com.BlogApplication.blogService.cqrs.query.payload.BlogModel;
 import com.BlogApplication.blogService.cqrs.query.query.GetAllBlogsQuery;
 import com.BlogApplication.blogService.cqrs.query.query.GetBlogsBetweenDates;
@@ -27,6 +28,7 @@ public class BlogQueryController {
     private QueryGateway queryGateway;
     @Autowired
     private Blogrepository blogRepository;
+
 
 
     public BlogQueryController(QueryGateway queryGateway) {
@@ -56,8 +58,8 @@ public class BlogQueryController {
         List<BlogModel> blogs = queryGateway.query(getBlogsByUsername, ResponseTypes.multipleInstancesOf(BlogModel.class)).join();
          return ResponseEntity.ok(blogs);
      }
-     @GetMapping("/date/{durationFromRange}/{durationFromRange}")
-    public ResponseEntity<?> getBlogBetweenDate(@PathVariable("durationFromRange")String startDate,@PathVariable("durationFromRange") String endDate){
+     @GetMapping("/date/{durationFromRange}/{durationToRange}")
+    public ResponseEntity<?> getBlogBetweenDate(@PathVariable("durationFromRange")String startDate,@PathVariable("durationToRange") String endDate){
          log.info("inside controller:get all between dates  blogs");
          GetBlogsBetweenDates getBlogsBetweenDates= new GetBlogsBetweenDates(startDate,endDate);
          log.info("loading query to query gateway");

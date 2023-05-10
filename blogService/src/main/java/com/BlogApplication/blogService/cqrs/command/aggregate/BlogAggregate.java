@@ -27,7 +27,7 @@ public class BlogAggregate {
     private String category;
     @CommandHandler
     public BlogAggregate(CreateBlogCommand createBlogCommand){
-        log.info("command handler:create blog ");
+        log.info("command handler:create blog "+createBlogCommand.toString());
         BlogCreatedEvent blogCreatedEvent=new BlogCreatedEvent();
         BeanUtils.copyProperties(createBlogCommand,blogCreatedEvent);
         AggregateLifecycle.apply(blogCreatedEvent);
@@ -50,7 +50,7 @@ public class BlogAggregate {
     }
     @EventSourcingHandler
     public void on(BlogCreatedEvent blogCreatedEvent){
-        log.info("event sourcing:create blog");
+        log.info("event sourcing:create blog"+blogCreatedEvent.toString());
         this.id=blogCreatedEvent.getId();
         this.author=blogCreatedEvent.getAuthor();
         this.topic=blogCreatedEvent.getTopic();

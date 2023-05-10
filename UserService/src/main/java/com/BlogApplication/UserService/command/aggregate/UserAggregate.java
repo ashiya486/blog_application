@@ -26,7 +26,7 @@ public class UserAggregate {
     private Set<String> roles;
     @CommandHandler
     public UserAggregate(CreateUserCommand createUserCommand){
-        log.info("inside command handler:");
+        log.info("inside command handler:"+createUserCommand.getUserId().toString());
         UserCreatedEvent userCreatedEvent= UserCreatedEvent.builder()
                 .username(createUserCommand.getUsername())
                 .email(createUserCommand.getEmail())

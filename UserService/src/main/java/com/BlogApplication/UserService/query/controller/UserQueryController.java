@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -51,7 +53,7 @@ public class UserQueryController {
        return ResponseEntity.ok(list);
     }
     @PostMapping("/authenticate")
-    public ResponseEntity<?>authenticateUser(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<?>authenticateUser(@Valid @RequestBody LoginRequest loginRequest){
         try{
             Authentication authentication=authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword()));
         }
@@ -62,8 +64,8 @@ public class UserQueryController {
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
     @GetMapping("/validate")
-    public ResponseEntity<?> validateUser(){
-        log.info("user validated");
+    public ResponseEntity<?> validateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String jwt){
+        log.info("user validated"+jwt);
     return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 
     }
